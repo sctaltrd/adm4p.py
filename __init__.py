@@ -33,7 +33,7 @@ import pythonnet
 def SetupNetFxRuntime(config_file = None, bin_path = None, target_framework = None, use_config_file_path_as_base = False, use_bin_path_as_base = False):
     # validate the existence of the ADM4PN assembly in Python installation directory (potential CRC validation for added measure of security)
     adManagerAssemblyName = "ADManager4Python"
-    adManagerVersion = "100.2023.306"
+    adManagerVersion = "100.2023.308"
     adManagerType = 'ADM4P.ADManager4Python'
     manager_dll_path = os.path.dirname(sys.executable) + "\\" + adManagerAssemblyName + ".dll"
     if not os.path.exists(manager_dll_path):
@@ -121,7 +121,7 @@ if __name__ == "__main__":
     import ctypes
     
     SetupNetFxRuntime(config_file = '$DEFAULT$', bin_path = '$CURRENT$', target_framework = '$STARTUP$')
-    loaderAssembly = r'D:\_WorkRoot\Globals\Python\adm4p\adm4p.net\_Tests\ExportedAssembly\bin\x64\Debug\ExportedAssembly.dll'
+    loaderAssembly = r'D:\_WorkRoot\Global\Python\adm4p\adm4p.net\_Tests\ExportedAssembly\bin\x64\Debug\ExportedAssembly.dll'
     tlc = ctypes.CDLL(loaderAssembly)
     tlc.tlc_BringItUp()
 
