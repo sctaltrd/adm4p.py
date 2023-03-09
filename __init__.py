@@ -35,7 +35,7 @@ def SetupNetFxRuntime(config_file = None, bin_path = None, target_framework = No
     adManagerAssemblyName = "ADManager4Python"
     adManagerVersion = "100.2023.308"
     adManagerType = 'ADM4P.ADManager4Python'
-    manager_dll_path = os.path.dirname(sys.executable) + "\\" + adManagerAssemblyName + ".dll"
+    manager_dll_path = os.path.join(os.path.dirname(sys.executable), adManagerAssemblyName + ".dll")
     if not os.path.exists(manager_dll_path):
         raise Exception(f"The expected assembly {adManagerAssemblyName} is not found in Python installation path at {os.path.dirname(sys.executable)}")
     else:
@@ -73,7 +73,9 @@ def SetupNetFxRuntime(config_file = None, bin_path = None, target_framework = No
             if use_bin_path_as_base:
                 context_elements[constBaseDir] = bin_path
         else:
-            bin_path = os.path.abspath(context_elements[constBaseDir] + bin_path)
+            bin_path = os.path.abspath(
+                os.path.join(context_elements[constBaseDir],bin_path)
+                )
     context_elements.append(bin_path)
     
     # config file
@@ -86,7 +88,9 @@ def SetupNetFxRuntime(config_file = None, bin_path = None, target_framework = No
             config_file = mainScript + ".config"
         else:
             if not(is_config_file_abs):
-                config_file = os.path.abspath(context_elements[constBaseDir] + config_file)
+                config_file = os.path.abspath(
+                    os.path.join(context_elements[constBaseDir],config_file)
+                    )
             else:
                 if use_config_file_path_as_base:
                     context_elements[constBaseDir] = os.path.dirname(config_file)
