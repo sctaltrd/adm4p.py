@@ -37,7 +37,7 @@ The .Net implementation of AppDomainManager is published using a companion repos
 
 ### Assembly resolution logic and switches
 
-### Limitations: <runtime> section
+### Limitations: `<runtime>` section
 
 Managed subsystems of .Net are all initialized after domain creation.  Therefore all facilities and all configuration sections work with one notable exception: `<runtime>`.  The CLR runtime components are loaded and prepared for execution before mscorlib (which is a managed assembly) even loaded - in the unmanaged code of CLR host. Which is a bummer - nothing in the AppDomain manager's code can reconfigure any runtime components (including GC).
 
