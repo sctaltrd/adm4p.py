@@ -2,7 +2,6 @@ import os
 import sys
 import xml.etree.ElementTree as xmltree
 import __main__
-import pythonnet
 
 ADM4P_ADM_ASM_NM = "ADManager4Python"
 ADM4P_ADM_ASM_VER = "100.2023.310"
@@ -159,6 +158,7 @@ def SetupNetFxRuntime(
     os.environ[ADM4P_ENV_VAR] = '|'.join(context_elements)
 
 def LoadNetFxRuntime():
+    import pythonnet
     pythonnet.load("netfx")
 
 # usage example 
