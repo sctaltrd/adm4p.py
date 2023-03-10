@@ -19,7 +19,7 @@ The package includes a folder with 2 binaries - managed assemblies with AppDomai
 You can install a package directly from this repository:
 
 ```
-pip install adm4p @ https://github.com/sctaltrd/adm4p.py
+pip install adm4p @ git+https://github.com/sctaltrd/adm4p.py
 ```
 
 ### Preparing for use
