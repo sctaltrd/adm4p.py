@@ -46,14 +46,16 @@ def LoadNetFxRuntime():
 ```
 `pythonnet` module is imported inside the method to break a dependency on the PythonNet while importing `adm4p` module.
 
-It creates an added consistency when using pythonnet:
+It goes without saying that you cannot load PythonNet's runtime prior of setting up parameters for the AppDomainManager to use when ClrLoader is invoked.  This is why this shortcut method provides an added consistency:
 ```
 import adm4p
 adm4p.SetupNetFxRuntime(*args)
 adm4p.LoadNetFxRuntime()
 ```
 
-But it is optional at the same time - consider not using PythonNet in the first place:
+When using PythonNet we import clr module to load assemblies.  But importing pythonnet directly in the script could be replaced with importing adm4p instead.
+
+But it is optional at the same time - consider example of not using PythonNet in the first place:
 ```
 import ctypes
 import adm4p
@@ -63,6 +65,8 @@ tlc = ctypes.CDLL(loaderAssembly)
 tlc.tlc_BringItUp()
 ```
 In the example above, the test assembly exports a public method of the class same way PythonNet's ClrLoader does - using "DllExport" attribute from NXPorts.
+
+NOTE: By introducing this wrapper, we are not trying to replace PythonNet with ADM4P branding.  The scope of adm4p module is limited to configure the default AppDomain and is not expected to expand.  PythonNet is given a full credit for the great solution provided to a community.
 
 ## .Net considerations
 
