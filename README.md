@@ -2,7 +2,7 @@
 
 When you use PythonNet or other methods to load .Net assemblies into a python script environment, they are loaded into a default domain created by mscorlib without any setup information.  It means you cannot set the target framework name, setup and load an application configuration file, have application base and private bin directories.  
 
-Setting those attributes require creating a non-root applicaiton domain or configuring a default domain at the time of creation.  At the time of creaton of this package, PythonNet team is still working on making non-root domains work.  Luckily, .Net provides an option of configuring a domain (including a default domain) at the time of creation - through a mechanism called AppDomainManager.
+Setting those attributes requires creating a non-root applicaiton domain or configuring a default domain at the time of creation.  At the time of creaton of this package, PythonNet team is still working on making non-root domains work.  Luckily, .Net provides an option of configuring a domain (including a default domain) at the time of creation - through a mechanism called AppDomainManager.
 
 This repo provides an implementation based on that mechanism.
 
@@ -13,6 +13,14 @@ This repo provides an implementation based on that mechanism.
 The package is a single Python module called adm4p (the repo called `adm4p.py` to separate itself from the companion repo with .Net side implementation `adm4p.net` but the module to be referred as `adm4p`).
 
 The package includes a folder with 2 binaries - managed assemblies with AppDomainManager implementation for 32- and 64-bit platforms.
+
+### Installing a package
+
+You can install a package directly from this repository:
+
+```
+pip install adm4p @ https://github.com/sctaltrd/adm4p.py
+```
 
 ### Preparing for use
 
@@ -47,12 +55,12 @@ adm4p.LoadNetFxRuntime()
 
 But it is optional at the same time - consider not using PythonNet in the first place:
 ```
-    import ctypes
-    import adm4p
-    adm4p.SetupNetFxRuntime(config_file = adm4p.KEYWORD_CONFIG_DEFAULT, bin_path = adm4p.KEYWORD_LOCATION_CURRENT, target_framework = adm4p.KEYWORD_TGTFRM_STARTUP)
-    loaderAssembly = r'D:\_WorkRoot\Global\Python\adm4p\adm4p.net\_Tests\ExportedAssembly\bin\x64\Debug\ExportedAssembly.dll'
-    tlc = ctypes.CDLL(loaderAssembly)
-    tlc.tlc_BringItUp()
+import ctypes
+import adm4p
+adm4p.SetupNetFxRuntime(config_file = adm4p.KEYWORD_CONFIG_DEFAULT, bin_path = adm4p.KEYWORD_LOCATION_CURRENT, target_framework = adm4p.KEYWORD_TGTFRM_STARTUP)
+loaderAssembly = r'D:\_WorkRoot\Global\Python\adm4p\adm4p.net\_Tests\ExportedAssembly\bin\x64\Debug\ExportedAssembly.dll'
+tlc = ctypes.CDLL(loaderAssembly)
+tlc.tlc_BringItUp()
 ```
 In the example above, the test assembly exports a public method of the class same way PythonNet's ClrLoader does - using "DllExport" attribute from NXPorts.
 
