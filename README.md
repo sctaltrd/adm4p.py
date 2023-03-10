@@ -30,6 +30,32 @@ Switches that control assembly resolution logic are described in the section bel
 
 ### LoadNetFxRuntime shortcut
 
+Technically, this package provides ability to configure a default domain for any scenario of CLR hosting and is totally independent from PythonNet.  But in practice, chances are PythonNet is the de-facto choice of working with managed code from python scripts.  To recognize that, the simple shortcut to load a `netfx` runtime (.Net Framework) is offered for consolidated API:
+```
+def LoadNetFxRuntime():
+    import pythonnet
+    pythonnet.load("netfx")
+```
+`pythonnet` module is imported inside the method to break a dependency on the PythonNet while importing `adm4p` module.
+
+It creates an added consistency when using pythonnet:
+```
+import adm4p
+adm4p.SetupNetFxRuntime(*args)
+adm4p.LoadNetFxRuntime()
+```
+
+But it is optional at the same time - consider not using PythonNet in the first place:
+```
+    import ctypes
+    import adm4p
+    adm4p.SetupNetFxRuntime(config_file = adm4p.KEYWORD_CONFIG_DEFAULT, bin_path = adm4p.KEYWORD_LOCATION_CURRENT, target_framework = adm4p.KEYWORD_TGTFRM_STARTUP)
+    loaderAssembly = r'D:\_WorkRoot\Global\Python\adm4p\adm4p.net\_Tests\ExportedAssembly\bin\x64\Debug\ExportedAssembly.dll'
+    tlc = ctypes.CDLL(loaderAssembly)
+    tlc.tlc_BringItUp()
+```
+In the example above, the test assembly exports a public method of the class same way PythonNet's ClrLoader does - using "DllExport" attribute from NXPorts.
+
 ## .Net considerations
 
 ### Companion repository
