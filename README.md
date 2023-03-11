@@ -108,10 +108,10 @@ The current implementation of ADM4P does not manage UI culture.
 
 #### Switches
 
-Switches (AR or General) are ULONG (unsigned 64-bit integers).  
+Switches (AR or General) are bit switches combined into ULONG (unsigned 64-bit integer).  
+When passed, they have to be passed as integer value or a string representing its value in decimal notation (hexidecimal notation is not supported).
 
 AR stands for "assembly resolution" and described in sections below.
-
 General switches are reserved and currently not used.
 
 ### Assembly resolution switches
@@ -157,6 +157,34 @@ The .Net implementation of AppDomainManager is published using a companion repos
 
 ### Assembly resolution logic and switches
 
+Here is the order, in which ADM4P will be resolving assemblies:
+1) AppBase (we expect it to have):
+   kind of default, kind of redundant - since .Net would resolve it for us any way;
+   but if assembly was rejected due to version mismatch, our file-based code would pick it up
+2) PrivateBinPath defined for the AppDomain (if defined):
+   standard .Net rules consider this location only if inside ApplicationBase; we use it always
+3) Path of requesting assembly
+4) Current / working directory of the process (as it was defined when activating the default domain)
+5) Current / working directory at the time of resolution
+6) "Fair game folders" - locations of all loaded assemblies
+7) Subfolders of each folder included in the search folders priority
+
+For locations referred as 1) - 5) subfolders named after the current culture (if different from culture neutral) will be evaluated prior of blanket recrusive search (referred as 7)).
+
+The culture of assembly resolution is evaluated in the following order:
+* the culture inside the requested assembly name
+* the culture of the current thread
+* the culture of the requesting assembly
+
+NOTE: While code is generally adheres to standard .Net rules per https://learn.microsoft.com/en-us/dotnet/framework/deployment/how-the-runtime-locates-assemblies, we also extend search logic to accomodate a hybrid nature of CLR hosted by Python scripting environment.
+
+Any deviation from the default .Net logic is controlled by assembly resolution binary switches:
+* if SWITCH_AR_CONSIDERREQUESTINGASM is set, the requesting assembly and the culture of the requesting assembly will be included in the search
+* if SWITCH_AR_WORKINGDIR is set, the current working directory will be included in the search
+* if SWITCH_AR_ACTIVATIONWORKINGDIR is set, the current working directory at the time of setting up the runtime will be included in the search
+* if SWITCH_AR_LOADEDASMS is set, the "fair game folders" (locations of all loaded assemblies) will be included in the search
+* if SWITCH_AR_SUBFOLDERS is set, subfolders of any folder considered for the search will be included in the search
+
 ### Culture
 
 Please consult .Net documentation on how culture assigned to threads works across domains.
@@ -172,7 +200,3 @@ As a consolation, only `<runtime>` section needs to be defined in that "global" 
 ### python.exe.config in the role of machine.config
 
 The globally defined python.exe.config file could act similarly to machine.config or applicationHost.config files (normally present with IIS hosting). As an added benefit along these lines, GC setting switches are ignored inside machine.config but ARE considered inside our de-facto machine level setup, which python,exe.config may become - from the hack to be a valuable player in the maintaining working environment. So dedicating python.exe.config to global runtime switches sounds less of the hack for me (than using that file for script specific configuration).
-
-## Pardon our dust
-
-Building this documentation is a work in progress until it is completed (at which time I will remove this notice).
