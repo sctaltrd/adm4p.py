@@ -32,6 +32,8 @@ Make sure you update that dll after each update of the package.
 
 ### SetupNetFxRuntime
 
+The method `SetupNetFxRuntime` must be called prior of loading any CLR (or triggering any actions that result in loading CLR). Once CLR is loaded, unless you unload a default AppDomain, setting up AppDomainManager will have no affect.
+
 ### Assembly resolution switches
 
 Switches that control assembly resolution logic are described in the section below (under .Net considerations).
