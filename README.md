@@ -116,7 +116,7 @@ General switches are reserved and currently not used.
 
 ### Assembly resolution switches
 
-Switches that control assembly resolution logic are described in the section below (under .Net considerations).
+Switches that control assembly resolution logic are described under .Net considerations.
 
 ### LoadNetFxRuntime shortcut
 
