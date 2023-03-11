@@ -34,6 +34,86 @@ Make sure you update that dll after each update of the package.
 
 The method `SetupNetFxRuntime` must be called prior of loading any CLR (or triggering any actions that result in loading CLR). Once CLR is loaded, unless you unload a default AppDomain, setting up AppDomainManager will have no affect.
 
+The method sets up the default AppDomain by allowing to configure:
+* config file
+* primary location of .Net binaries
+* target .Net framework name
+* default culture for the newly created AppDomain
+* rules how to resolve assemblies under this script
+
+```
+def SetupNetFxRuntime(
+    *, 
+    config_file = None, use_config_file_path_as_base = False,
+    bin_path = None, use_bin_path_as_base = False, config_file_relative_to_bin = False,
+    target_framework = None,   
+    culture = None, 
+    switches_AR = None, switches_General = None
+    ):
+```
+#### Defaults
+By default, ADM4P treats the location of the root script (the script, which is launched with __main__ method) same way as the location of the managed executable - making that location as ApplicationBase directory.  
+
+The ApplicationName property is also set using the name of the root script.
+
+The ADM4P also passes to .Net side (AppDomainManager) current OS working directory.
+
+#### Private binary path
+
+The primary binary path can be either absolute or relative path.  If it is relative path, it is relative to what will be set as the AppDomain's base directory.
+The primary binary path can be configured using KEYWORD_LOCATION_CURRENT constant (`$CURRENT$`) - in which case, it is set using current working directory.
+
+If the primary binary path is left blank (or None) or configured with the special constant KEYWORD_LOCATION_BASE (`$BASE$`), the base directory will be used as a location of binaries.
+
+If the binary path is an absolute path, the special flag `use_bin_path_as_base` can be used to set application base directory from the binary path.
+
+More on locating assemblies to load can be found in sections below.
+
+#### Reference to configuration file
+
+The configuration file path can be specified using several ways:
+* absolute path to the file (including a config file name)
+* relative path to the file (including a config file name); by default, the parent folder is assumed application base, but if the flag `config_file_relative_to_bin` is set to True, the private bin path will be used as a parent folder of the config file path
+* just file name - which is an equavalent of ".\<file name>", which means the file located in the directory dedicated for ApplicationBase
+* using special constant KEYWORD_CONFIG_DEFAULT (`$DEFAULT$`), which would generate config file name following .Net convention - `<ApplicationName>.config` - assuming the file is located at the ApplicationBase directory.
+
+If the config file path is an absolute path and the flag `use_config_file_path_as_base` is set to True, the path to the configuration file will be used as ApplicationBase directory instead of a location of the root script.
+
+If the parameter is left blank, the config file will not be set for the application domain.
+
+#### Target .Net Framework Name
+    
+Starting from .Net 4.6.2, Microsoft has introduced compatibility switches to match .Net behavior to behaviors prior of version when it was changed or fixed.  .Net has introduced a class `AppContext`, which is initialized using a target framework name as defined by AppDomain.  If AppDomain has target framework name left blank, the behavior of .Net 4.0 (and prior) is assumed.
+    
+During setting up of runtime, the target framework can be passed using several ways:
+* specified in the following format (per .Net's FrameworkName class): `<identifier>, Version=[v|V]<version>` aka `.NETFramework,Version=v4.8.0`
+* blank
+* using special constant KEYWORD_TGTFRM_STARTUP (`$STARTUP$`)
+    
+Blank will invoke the built-in logic inside ADM4P implementation: since the Python.exe is not managed process and does not contain .Net assembly manifest, it cannot be treated as entry assembly; and target framework attribute of any loaded assemblies cannot be used since references to assemblies are loaded in pretty much random order and way after AppDomain is created; and unfortunately supportedRuntime element in the startup section of the config file is not used by .Net by default and we avoid using it either as a default option (even when config file is provided) since inside AppDomainManager code we are limited only to what is defined inside mscorlib.
+    
+If using `<supportedRuntime>`'s `sku` attribute is desired, the target framework has to be specified using KEYWORD_TGTFRM_STARTUP constant.
+    
+Note: Compatibility switches can be overriden inside `<runtime>` section if the target framework name is recognized as new version but the application must run using older / legacy behavior. But since the approach based on AppDomainManager ignores `<runtime>` section of the configuration file assigned to the run (see section below), maintaining accurate target framework name is important.
+    
+#### Culture
+
+The desired culture can be set using standard culture notation. 
+
+The culture is not set to AppDomain - AppDomain's setup does not require that parameter.  The culture is assigned to `CultureInfo.DefaultThreadCurrentCulture', which makes all threads inside the curernt AppDomain run inside that culture.  
+
+Besides a useful shortcut, setting up domain threads with the sapecific culture addsto more robust assembly resolution.
+
+The current implementation of ADM4P does not manage UI culture.
+
+#### Switches
+
+Switches (AR or General) are ULONG (unsigned 64-bit integers).  
+
+AR stands for "assembly resolution" and described in sections below.
+
+General switches are reserved and currently not used.
+
 ### Assembly resolution switches
 
 Switches that control assembly resolution logic are described in the section below (under .Net considerations).
@@ -76,6 +156,10 @@ NOTE: By introducing this wrapper, we are not trying to replace PythonNet with A
 The .Net implementation of AppDomainManager is published using a companion repository [adm4p.net](https://github.com/sctaltrd/adm4p.net).
 
 ### Assembly resolution logic and switches
+
+### Culture
+
+Please consult .Net documentation on how culture assigned to threads works across domains.
 
 ### Limitations: `<runtime>` section
 
