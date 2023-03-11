@@ -148,7 +148,7 @@ tlc.tlc_BringItUp()
 ```
 In the example above, the test assembly exports a public method of the class same way PythonNet's ClrLoader does - using "DllExport" attribute from NXPorts.
 
-NOTE: By introducing this wrapper, we are not trying to replace PythonNet with ADM4P branding.  The scope of adm4p module is limited to configure the default AppDomain and is not expected to expand.  PythonNet is given a full credit for the great solution provided to a community.
+NOTE: By introducing this wrapper, we are not trying to replace PythonNet with ADM4P branding.  The scope of adm4p module is limited to configure the default AppDomain and is not expected to expand.  PythonNet and its contributors are given a full credit for the great solution provided to a community.
 
 ## .Net considerations
 
