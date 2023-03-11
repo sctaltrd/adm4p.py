@@ -165,7 +165,7 @@ Please consult .Net documentation on how culture assigned to threads works acros
 
 Managed subsystems of .Net are all initialized after domain creation.  Therefore all facilities and all configuration sections work with one notable exception: `<runtime>`.  The CLR runtime components are loaded and prepared for execution before mscorlib (which is a managed assembly) even loaded - in the unmanaged code of CLR host. Which is a bummer - nothing in the AppDomain manager's code can reconfigure any runtime components (including GC).
 
-Configuring such switches (such as `gcAllowVeryLargeObjects`) are required in the config file that is associated with the process, inside which the CLR is loaded.  In our case, the process is python.exe, and the expected config file name is `python.exec.config`.
+Configuring such switches (like `gcAllowVeryLargeObjects`) are required in the config file that is associated with the process, inside which the CLR is loaded.  In our case, the process is python.exe, and the expected config file name is `python.exec.config`.
 
 As a consolation, only `<runtime>` section needs to be defined in that "global" config file.  Any sections defined in python.exe.config file will be effectively ignored once the configuration file for the AppDomain is provided.
 
