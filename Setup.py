@@ -6,6 +6,5 @@ setup(name="adm4p",
       packages=packages,
       package_dir={"adm4p": "../adm4p"},
       include_package_data=True,
-      zip_safe=False
       python_requires='>=3.10',
       )
